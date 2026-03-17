@@ -1,5 +1,28 @@
 import Item from "../models/items.js";
 
+const getErrorResponse = (error) => {
+  if (error?.name === "ValidationError") {
+    return {
+      status: 400,
+      message: error.message,
+    };
+  }
+
+  if (error?.code === 11000) {
+    const duplicateField = Object.keys(error.keyPattern || {})[0] || "field";
+
+    return {
+      status: 409,
+      message: `${duplicateField} already exists`,
+    };
+  }
+
+  return {
+    status: 500,
+    message: error.message || "Internal server error",
+  };
+};
+
 export const createItem = async (req, res) => {
   try {
     console.log("[ITEMS] createItem payload:", req.body);
@@ -14,7 +37,8 @@ export const createItem = async (req, res) => {
 
   } catch (error) {
     console.error("[ITEMS] createItem error:", error.message);
-    res.status(500).json({ message: error.message });
+    const { status, message } = getErrorResponse(error);
+    res.status(status).json({ message });
   }
 };
 
@@ -30,6 +54,7 @@ export const getItems = async (req, res) => {
 
   } catch (error) {
     console.error("[ITEMS] getItems error:", error.message);
-    res.status(500).json({ message: error.message });
+    const { status, message } = getErrorResponse(error);
+    res.status(status).json({ message });
   }
 };
