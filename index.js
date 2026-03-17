@@ -11,8 +11,6 @@ import invRoutes from "./routes/InvRoutes.js";
 
 dotenv.config();
 
-connectDB();
-
 const app = express();
 
 const allowedOrigins = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
@@ -131,6 +129,17 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+const startServer = async () => {
+  try {
+    await connectDB();
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error("[SERVER] Failed to start:", error.message);
+    process.exit(1);
+  }
+};
+
+startServer();
