@@ -79,6 +79,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
+    console.log(
+      `[${new Date().toISOString()}] OPTIONS preflight for ${req.originalUrl} from ${
+        req.headers.origin || "no-origin"
+      }`
+    );
     return cors(corsOptions)(req, res, next);
   }
 
